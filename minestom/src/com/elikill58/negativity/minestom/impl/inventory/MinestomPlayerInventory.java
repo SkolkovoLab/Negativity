@@ -1,10 +1,5 @@
 package com.elikill58.negativity.minestom.impl.inventory;
 
-import java.util.Optional;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
-
 import com.elikill58.negativity.api.inventory.InventoryType;
 import com.elikill58.negativity.api.inventory.NegativityHolder;
 import com.elikill58.negativity.api.inventory.PlayerInventory;
@@ -12,9 +7,12 @@ import com.elikill58.negativity.api.item.ItemStack;
 import com.elikill58.negativity.api.item.Material;
 import com.elikill58.negativity.minestom.impl.inventory.holders.MinestomNegativityHolder;
 import com.elikill58.negativity.minestom.impl.item.MinestomItemStack;
-
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class MinestomPlayerInventory extends PlayerInventory {
 
@@ -29,8 +27,8 @@ public class MinestomPlayerInventory extends PlayerInventory {
 	}
 
 	private Optional<ItemStack> getArmorItem(EquipmentSlot slot) {
-		net.minestom.server.item.ItemStack i = inv.getEquipment(slot, slot.armorSlot());
-		return i == null || i.material().equals(net.minestom.server.item.Material.AIR) ? Optional.empty() : Optional.of(new MinestomItemStack(i));
+		net.minestom.server.item.ItemStack i = inv.getEquipment(slot);
+		return i.material().equals(net.minestom.server.item.Material.AIR) ? Optional.empty() : Optional.of(new MinestomItemStack(i));
 	}
 	
 	@Override
@@ -107,7 +105,7 @@ public class MinestomPlayerInventory extends PlayerInventory {
 	}
 	
 	private void setArmorItem(EquipmentSlot slot, ItemStack item) {
-		inv.setEquipment(slot, slot.armorSlot(), (net.minestom.server.item.@NotNull ItemStack) item.getDefault());
+		inv.setEquipment(slot, (net.minestom.server.item.@NotNull ItemStack) item.getDefault());
 	}
 
 	@Override

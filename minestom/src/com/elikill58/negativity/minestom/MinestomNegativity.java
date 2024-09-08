@@ -1,45 +1,40 @@
 package com.elikill58.negativity.minestom;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import com.elikill58.negativity.api.yaml.Configuration;
-import com.elikill58.negativity.minestom.listeners.BlockListeners;
-import com.elikill58.negativity.minestom.listeners.EntityListeners;
-import com.elikill58.negativity.minestom.listeners.InventoryListeners;
-import com.elikill58.negativity.minestom.listeners.PacketListeners;
-import com.elikill58.negativity.minestom.listeners.PlayersListeners;
+import com.elikill58.negativity.minestom.listeners.*;
 import com.elikill58.negativity.universal.Adapter;
 import com.elikill58.negativity.universal.Negativity;
 import com.elikill58.negativity.universal.ban.BanManager;
 import com.elikill58.negativity.universal.storage.account.NegativityAccountStorage;
 import com.elikill58.negativity.universal.warn.WarnManager;
-
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
-import net.minestom.server.extensions.Extension;
-import net.minestom.server.extensions.ExtensionClassLoader;
+import net.minestom.server.event.Event;
+import net.minestom.server.event.EventNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MinestomNegativity extends Extension {
+import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class MinestomNegativity {
 
 	public static final List<String> ALL_COMMANDS = new ArrayList<>();
-	public static MinestomNegativity INSTANCE;
+	public static final Logger logger = LoggerFactory.getLogger("Negativity");
 
-	@Override
-	public void initialize() {
-		INSTANCE = this;
+	public final Path dataDirectory;
 
-		loadNetty();
+    public MinestomNegativity(Path dataDirectory) {
+        this.dataDirectory = dataDirectory;
+    }
+
+    public void initialize() {
 		new File(getDataDirectory().toFile(), "user" + File.separator + "proof").mkdirs();
 
-		Adapter.setAdapter(new MinestomAdapter(this, getLogger()));
+		Adapter.setAdapter(new MinestomAdapter(this, logger));
 
 		Negativity.loadNegativity();
 
@@ -52,10 +47,17 @@ public class MinestomNegativity extends Extension {
 		new PacketListeners(getEventNode());
 
 		loadCommands();
-		getLogger().info("Negativity v" + getOrigin().getVersion() + " loaded.");
+		logger.info("Negativity loaded.");
 	}
 
-	@Override
+	public Path getDataDirectory() {
+		return dataDirectory;
+	}
+
+	public EventNode<Event> getEventNode() {
+		return MinecraftServer.getGlobalEventHandler();
+	}
+
 	public void terminate() {
 		Negativity.closeNegativity();
 	}
@@ -88,79 +90,7 @@ public class MinestomNegativity extends Extension {
 		}
 	}
 
-	public static MinestomNegativity getInstance() {
-		return INSTANCE;
-	}
-
 	public static List<Player> getOnlinePlayers() {
 		return new ArrayList<>(MinecraftServer.getConnectionManager().getOnlinePlayers());
-	}
-
-	private void loadNetty() {
-		CompletableFuture.runAsync(() -> {
-			File netty = new File(getDataDirectory().toFile(), "netty");
-			if (netty.exists() && netty.isDirectory()) {
-				getLogger().info("[Negativity] Loading netty dependancy ...");
-				int loaded = 0, failed = 0;
-				for (File jarFile : netty.listFiles()) {
-					if (jarFile.isFile() && jarFile.getName().endsWith(".jar")) {
-						if (loadJar(jarFile))
-							loaded++;
-						else
-							failed++;
-					}
-				}
-				getLogger().info("[Negativity] " + loaded + " jars loaded and " + failed + " failed.");
-				try {
-					for (String names : Arrays.asList("io.netty.buffer.Unpooled", "io.netty.buffer.ByteBuf",
-							"io.netty.handler.codec.DecoderException"))
-						Class.forName(names);
-					getLogger().info("[Negativity] Netty well loaded.");
-				} catch (ClassNotFoundException e) {
-					getLogger().error("[Negativity] Failed to load netty. " + e.getMessage());
-				}
-			} else {
-				netty.mkdirs();
-				getLogger().info("[Negativity] Netty not found. Downloading required files ...");
-				int loaded = 0, failed = 0;
-				String nettyVersion = "4.1.85.Final";
-				for (String requiredJarNames : Arrays.asList("netty-all", "netty-buffer", "netty-codec", "netty-common",
-						"netty-handler")) {
-					String fileName = requiredJarNames + "-" + nettyVersion + ".jar";
-					String url = "https://repo1.maven.org/maven2/io/netty/" + requiredJarNames + "/" + nettyVersion
-							+ "/" + fileName;
-					try {
-						try (InputStream in = new URI(url).toURL().openStream()) {
-							File jarFile = new File(netty, fileName);
-							Files.copy(in, jarFile.toPath());
-							getLogger().info("[Negativity] Jar " + fileName + " downloaded.");
-							if (loadJar(jarFile))
-								loaded++;
-							else
-								failed++;
-						}
-					} catch (Exception e) {
-						getLogger().error("[Negativity] Can't download file for jar " + requiredJarNames + ". Reason: "
-								+ e.getMessage());
-						e.printStackTrace();
-					}
-				}
-				getLogger().info("[Negativity] " + loaded + " jars loaded and " + failed + " failed.");
-			}
-		});
-	}
-
-	private boolean loadJar(File file) {
-		try {
-			URL url = file.toURI().toURL();
-
-			ClassLoader classLoader = getClass().getClassLoader();
-			if (classLoader instanceof ExtensionClassLoader ecl)
-				ecl.addURL(url);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 }

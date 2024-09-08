@@ -1,12 +1,11 @@
 package com.elikill58.negativity.minestom;
 
-import org.slf4j.Logger;
-
 import com.elikill58.negativity.universal.logger.LoggerAdapter;
+import org.slf4j.Logger;
 
 public class Slf4jLoggerAdapter implements LoggerAdapter {
 
-	private Logger logger;
+	private final Logger logger;
 	
 	public Slf4jLoggerAdapter(Logger logger) {
 		this.logger = logger;
@@ -14,17 +13,17 @@ public class Slf4jLoggerAdapter implements LoggerAdapter {
 	
 	@Override
 	public void info(String msg) {
-		logger.info("[Negativity] " +  msg);
+		logger.info(msg);
 	}
 
 	@Override
 	public void warn(String msg) {
-		logger.warn("[Negativity] " +  msg);
+		logger.warn(msg);
 	}
 
 	@Override
 	public void error(String msg) {
-		logger.error("[Negativity] " +  msg);
+		logger.error(msg);
 	}
 
 	@Override

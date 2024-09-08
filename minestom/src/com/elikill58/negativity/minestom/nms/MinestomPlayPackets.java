@@ -1,15 +1,10 @@
 package com.elikill58.negativity.minestom.nms;
 
-import java.util.HashMap;
-
 import net.minestom.server.network.packet.client.ClientPacket;
-import net.minestom.server.network.packet.client.common.ClientKeepAlivePacket;
-import net.minestom.server.network.packet.client.common.ClientPingRequestPacket;
-import net.minestom.server.network.packet.client.common.ClientPluginMessagePacket;
-import net.minestom.server.network.packet.client.common.ClientPongPacket;
-import net.minestom.server.network.packet.client.common.ClientResourcePackStatusPacket;
-import net.minestom.server.network.packet.client.common.ClientSettingsPacket;
+import net.minestom.server.network.packet.client.common.*;
 import net.minestom.server.network.packet.client.play.*;
+
+import java.util.HashMap;
 
 public class MinestomPlayPackets {
 
@@ -27,6 +22,7 @@ public class MinestomPlayPackets {
         nextId(); // difficulty packet
         register(nextId(), ClientChatAckPacket.class);
         register(nextId(), ClientCommandChatPacket.class);
+        register(nextId(), ClientSignedCommandChatPacket.class);
         register(nextId(), ClientChatMessagePacket.class);
         register(nextId(), ClientChatSessionUpdatePacket.class);
         register(nextId(), ClientChunkBatchReceivedPacket.class);
@@ -38,7 +34,9 @@ public class MinestomPlayPackets {
         register(nextId(), ClientClickWindowPacket.class);
         register(nextId(), ClientCloseWindowPacket.class);
         register(nextId(), ClientWindowSlotStatePacket.class);
+        register(nextId(), ClientCookieResponsePacket.class);
         register(nextId(), ClientPluginMessagePacket.class);
+        register(nextId(), ClientDebugSampleSubscriptionPacket.class);
         register(nextId(), ClientEditBookPacket.class);
         register(nextId(), ClientQueryEntityNbtPacket.class);
         register(nextId(), ClientInteractEntityPacket.class);

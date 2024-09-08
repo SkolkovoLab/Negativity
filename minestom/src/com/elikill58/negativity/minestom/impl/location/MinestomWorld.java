@@ -1,9 +1,5 @@
 package com.elikill58.negativity.minestom.impl.location;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.elikill58.negativity.api.block.Block;
 import com.elikill58.negativity.api.entity.Entity;
 import com.elikill58.negativity.api.location.Difficulty;
@@ -11,10 +7,13 @@ import com.elikill58.negativity.api.location.Location;
 import com.elikill58.negativity.api.location.World;
 import com.elikill58.negativity.minestom.impl.block.MinestomBlock;
 import com.elikill58.negativity.minestom.impl.entity.MinestomEntity;
-
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MinestomWorld extends World {
 
@@ -42,12 +41,12 @@ public class MinestomWorld extends World {
 
 	@Override
 	public int getMaxHeight() {
-		return w.getDimensionType().getMaxY();
+		return w.getCachedDimensionType().maxY();
 	}
 
 	@Override
 	public int getMinHeight() {
-		return w.getDimensionType().getMinY();
+		return w.getCachedDimensionType().minY();
 	}
 	
 	@Override

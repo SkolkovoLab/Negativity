@@ -1,8 +1,5 @@
 package com.elikill58.negativity.minestom.impl.inventory;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
-
 import com.elikill58.negativity.api.inventory.Inventory;
 import com.elikill58.negativity.api.inventory.InventoryType;
 import com.elikill58.negativity.api.inventory.NegativityHolder;
@@ -10,34 +7,39 @@ import com.elikill58.negativity.api.inventory.PlatformHolder;
 import com.elikill58.negativity.api.item.ItemStack;
 import com.elikill58.negativity.api.item.Material;
 import com.elikill58.negativity.minestom.impl.item.MinestomItemStack;
-
-import net.minestom.server.inventory.ContainerInventory;
 import net.minestom.server.inventory.PlayerInventory;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class MinestomInventory extends Inventory {
 
-	private net.minestom.server.inventory.Inventory inv;
+	private net.minestom.server.inventory.AbstractInventory inv;
 	private final NegativityHolder holder;
 	
-	public MinestomInventory(net.minestom.server.inventory.Inventory inv) {
+	public MinestomInventory(net.minestom.server.inventory.AbstractInventory inv) {
 		this.inv = inv;
-		this.holder = HolderById.getHolder(inv.getWindowId());
+		this.holder = HolderById.getHolder(getWindowId(inv));
+	}
+
+	private int getWindowId(net.minestom.server.inventory.AbstractInventory inv) {
+		if (inv instanceof net.minestom.server.inventory.Inventory ci) return ci.getWindowId();
+		return 0;
 	}
 
 	public MinestomInventory(String inventoryName, int size, NegativityHolder holder) {
 		net.minestom.server.inventory.InventoryType type = net.minestom.server.inventory.InventoryType.CHEST_6_ROW;
 		if(size % 9 == 0)
 			type = net.minestom.server.inventory.InventoryType.valueOf("CHEST_" + (size / 9) + "_ROW");
-		this.inv = new net.minestom.server.inventory.ContainerInventory(type, inventoryName);
+		this.inv = new net.minestom.server.inventory.Inventory(type, inventoryName);
 		this.holder = holder;
-		HolderById.add(inv.getWindowId(), holder);
+		HolderById.add(getWindowId(inv), holder);
 	}
 	
 	@Override
 	public InventoryType getType() {
 		if(inv instanceof PlayerInventory)
 			return InventoryType.PLAYER;
-		if(inv instanceof ContainerInventory ci) {
+		if(inv instanceof net.minestom.server.inventory.Inventory ci) {
 			switch(ci.getInventoryType()) {
 			case ANVIL:
 				return InventoryType.ANVIL;
@@ -120,7 +122,7 @@ public class MinestomInventory extends Inventory {
 
 	@Override
 	public String getInventoryName() {
-		if(inv instanceof ContainerInventory ci)
+		if(inv instanceof net.minestom.server.inventory.Inventory ci)
 			return ci.getTitle().examinableName();
 		return null;
 	}
@@ -131,7 +133,7 @@ public class MinestomInventory extends Inventory {
 	}
 
 	@Override
-	public net.minestom.server.inventory.Inventory getDefault() {
+	public net.minestom.server.inventory.AbstractInventory getDefault() {
 		return inv;
 	}
 	

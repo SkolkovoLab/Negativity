@@ -17,11 +17,9 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 dependencies {
     api project(':common')
-    compileOnly 'com.github.Minestom:Minestom:e63c9def24'
-    // https://mvnrepository.com/artifact/dev.hollowcube/minestom-ce-extensions
-	compileOnly 'dev.hollowcube:minestom-ce-extensions:1.2.0'
-    
-    compileOnly 'io.netty:netty-all:4.1.110.Final'
+    compileOnly 'net.minestom:minestom-snapshots:a521c4e7cd'
+
+    implementation 'io.netty:netty-all:4.1.110.Final'
 }
 
 processResources {

@@ -1,15 +1,5 @@
 package com.elikill58.negativity.minestom;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.slf4j.Logger;
-
 import com.elikill58.negativity.api.entity.OfflinePlayer;
 import com.elikill58.negativity.api.entity.Player;
 import com.elikill58.negativity.api.inventory.Inventory;
@@ -28,7 +18,6 @@ import com.elikill58.negativity.minestom.impl.inventory.MinestomInventory;
 import com.elikill58.negativity.minestom.impl.item.MinestomItemBuilder;
 import com.elikill58.negativity.minestom.impl.item.MinestomItemRegistrar;
 import com.elikill58.negativity.minestom.impl.location.MinestomWorld;
-import com.elikill58.negativity.minestom.impl.plugin.MinestomExternalPlugin;
 import com.elikill58.negativity.minestom.nms.MinestomVersionAdapter;
 import com.elikill58.negativity.universal.Adapter;
 import com.elikill58.negativity.universal.Platform;
@@ -40,16 +29,22 @@ import com.elikill58.negativity.universal.logger.LoggerAdapter;
 import com.elikill58.negativity.universal.translation.NegativityTranslationProviderFactory;
 import com.elikill58.negativity.universal.translation.TranslationProviderFactory;
 import com.elikill58.negativity.universal.utils.UniversalUtils;
-
-import net.hollowcube.minestom.extensions.ExtensionBootstrap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.extensions.DiscoveredExtension;
-import net.minestom.server.extensions.Extension;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.timer.TaskSchedule;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class MinestomAdapter extends Adapter {
 
@@ -109,7 +104,7 @@ public class MinestomAdapter extends Adapter {
 	
 	@Override
 	public String getPluginVersion() {
-		return MinestomNegativity.getInstance().getOrigin().getVersion();
+		return "dev";
 	}
 
 	@Override
@@ -216,13 +211,12 @@ public class MinestomAdapter extends Adapter {
 
 	@Override
 	public boolean hasPlugin(String name) {
-		return ExtensionBootstrap.getExtensionManager().hasExtension(name);
+		return false;
 	}
 
 	@Override
 	public ExternalPlugin getPlugin(String name) {
-		Extension e = ExtensionBootstrap.getExtensionManager().getExtension(name);
-		return e == null ? null : new MinestomExternalPlugin(e);
+		return null;
 	}
 	
 	@Override
@@ -265,12 +259,19 @@ public class MinestomAdapter extends Adapter {
 	
 	@Override
 	public List<String> getAllPlugins() {
-		return ExtensionBootstrap.getExtensionManager().getExtensions().stream().map(Extension::getOrigin).map(DiscoveredExtension::getName).collect(Collectors.toList());
+		return Collections.emptyList();
 	}
 
 	@Override
 	public World getServerWorld(Player p) {
-		Instance i = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(p.getUniqueId()).getInstance();
+		net.minestom.server.entity.Player minestomPlayer = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(p.getUniqueId());
+		if (minestomPlayer == null) {
+			return null;
+		}
+		Instance i = minestomPlayer.getInstance();
+		if (i == null) {
+			return null;
+		}
 		return World.getWorld(i.getUniqueId().toString(), (a) -> new MinestomWorld(i));
 	}
 }

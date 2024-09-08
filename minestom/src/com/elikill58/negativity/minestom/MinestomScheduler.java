@@ -1,18 +1,16 @@
 package com.elikill58.negativity.minestom;
 
-import java.time.Duration;
-import java.util.function.Consumer;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import com.elikill58.negativity.universal.ScheduledTask;
 import com.elikill58.negativity.universal.Scheduler;
-
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.SchedulerManager;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.time.Duration;
+import java.util.function.Consumer;
 
 public class MinestomScheduler implements Scheduler {
 	
@@ -25,7 +23,7 @@ public class MinestomScheduler implements Scheduler {
 	
 	@Override
 	public void runRepeating(Consumer<ScheduledTask> task, int delayTicks, int intervalTicks) {
-		MinestomNegativity.getInstance().getLogger().error("MinestomScheduler#runRepeating isn't implemented yet.");
+		MinestomNegativity.logger.error("MinestomScheduler#runRepeating isn't implemented yet.");
 	}
 	
 	@Override
